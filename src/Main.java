@@ -54,7 +54,7 @@ public class Main {
 		//dampingP(0.95d);	//Damping Factor
 		dampingP(0.50d);	//Damping Factor
 		
-		double[][] pingas = pn(P, stateVector, 200); //due to floating point rounding errors perfect equilibrium won't be reached; therefore, use n = 200.
+		double[][] pingas = pn(P, stateVector); //due to floating point rounding errors perfect equilibrium won't be reached; therefore method continues until difference is very small
 		//printMatrix(pingas);
 		
 		ArrayList<RankLinkPair> rankLinkList = new ArrayList<RankLinkPair>();
@@ -136,7 +136,24 @@ public class Main {
 		System.out.println("Finished Normalizing P!");
 	}
 	
-	public static double[][] pn(double[][] A, double[][] V, double n){
+	public static double[][] pn(double[][] A, double[][] V){
+		System.out.println("Starting pn calculations");
+		double[][] answer = multMatrix(A, V);
+		double[][] previousAnswer = V;
+		int i = 0;
+		System.out.println("Iter until difference is less than: " + ((1/(double)links.size())/1000000d)); //iterate until difference is very very small
+		
+		while(Math.abs(answer[0][0] - previousAnswer[0][0]) > (1/(double)links.size())/1000000d){
+			i++;
+			System.out.println("pn iter: " + i + " Difference: " + Math.abs(answer[0][0] - previousAnswer[0][0]));
+			previousAnswer = answer.clone();
+			answer = multMatrix(A, answer);
+		}
+		System.out.println("Finshed pn calculations!");
+		return answer;
+	} 	
+	
+	/*public static double[][] pn(double[][] A, double[][] V, double n){
 		System.out.println("Starting pn calculations");
 		double[][] answer = multMatrix(A, V);
 		for(int i=1; i<n; i++){
@@ -145,7 +162,7 @@ public class Main {
 		}
 		System.out.println("Finshed pn calculations!");
 		return answer;
-	} 
+	} */
 	
 	public static double[][] multMatrix(double a[][], double b[][]){//a[m][n], b[n][p]
 		int n = a[0].length;
